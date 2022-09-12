@@ -8,19 +8,11 @@ import useAddUser from "../lib/hooks/useAddUser";
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
-  // const [addUser, isAddingUser] = useAddUser()
-  const [users, setUsers] = useState([])
+  const [addUser, isAddingUser] = useAddUser()
 
   const handleLoggedIn = () => {
     setLoggedIn(!loggedIn);
     console.log(loggedIn);
-  };
-
-  const addUser = async (user) => {
-    setUsers([...users, user])
-    await supabase.from("users").insert(user);
-
-    console.log(user)
   };
 
   return (
@@ -63,7 +55,7 @@ export default function Home() {
                   className="border border-gray-500 w-80 rounded-xl p-2 mb-4"
                 />
                 <p className="text-gray-500 ml-2 text-sm mb-1">
-                  Profile Photo URL
+                  Profile Photo URL (optional)
                 </p>
                 <Field
                   type="text"
