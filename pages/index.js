@@ -5,14 +5,21 @@ import Menu from "../lib/components/Menu/Menu";
 import { supabase } from "../lib/utils/client";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import useAddUser from "../lib/hooks/useAddUser";
+import useThreads from "../lib/hooks/useThreads";
 
-export default function Home() {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [addUser, isAddingUser] = useAddUser()
+export default function Home({}) {
+  const [loggedIn, setLoggedIn] = useState(true);
+  const [addUser, isAddingUser] = useAddUser();
+  const [
+    threads,
+    isFetchingThreads,
+    currentThread,
+    setCurrentThread,
+    fetchThreads,
+  ] = useThreads("");
 
   const handleLoggedIn = () => {
     setLoggedIn(!loggedIn);
-    console.log(loggedIn);
   };
 
   return (
@@ -35,7 +42,6 @@ export default function Home() {
           <Formik
             initialValues={{ username: "", password: "", profilePhotoUrl: "" }}
             onSubmit={async (values) => {
-              // submit to database
               addUser(values);
               handleLoggedIn();
             }}
@@ -80,9 +86,23 @@ export default function Home() {
       )}
 
       <main className="flex justify-center h-screen py-12">
-        <Menu handleLoggedIn={handleLoggedIn} />
+        <Menu
+          handleLoggedIn={handleLoggedIn}
+          threads={threads}
+          isFetchingThreads={isFetchingThreads}
+          currentThread={currentThread}
+          setCurrentThread={setCurrentThread}
+          fetchThreads={fetchThreads}
+        />
 
-        <Feed />
+        <Feed
+          handleLoggedIn={handleLoggedIn}
+          threads={threads}
+          isFetchingThreads={isFetchingThreads}
+          currentThread={currentThread}
+          setCurrentThread={setCurrentThread}
+          fetchThreads={fetchThreads}
+        />
       </main>
     </div>
   );
