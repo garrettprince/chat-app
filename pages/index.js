@@ -6,8 +6,9 @@ import { supabase } from "../lib/utils/client";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import useAddUser from "../lib/hooks/useAddUser";
 import useThreads from "../lib/hooks/useThreads";
+import useUser from "../lib/hooks/useUser";
 
-export default function Home({}) {
+export default function Home() {
   const [loggedIn, setLoggedIn] = useState(true);
   const [addUser, isAddingUser] = useAddUser();
   const [
@@ -17,6 +18,9 @@ export default function Home({}) {
     setCurrentThread,
     fetchThreads,
   ] = useThreads("");
+
+  const [users, isFetchingUsers, currentUser, setCurrentUser, fetchUsers] =
+    useUser();
 
   const handleLoggedIn = () => {
     setLoggedIn(!loggedIn);
@@ -102,6 +106,8 @@ export default function Home({}) {
           currentThread={currentThread}
           setCurrentThread={setCurrentThread}
           fetchThreads={fetchThreads}
+          loggedIn={loggedIn}
+          currentUser={currentUser}
         />
       </main>
     </div>
