@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Feed from "../lib/components/Feed/Feed";
 import Menu from "../lib/components/Menu/Menu";
 import { supabase } from "../lib/utils/client";
@@ -7,10 +7,14 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import useAddUser from "../lib/hooks/useAddUser";
 import useThreads from "../lib/hooks/useThreads";
 import useUser from "../lib/hooks/useUser";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(true);
   const [addUser, isAddingUser] = useAddUser();
+  const [profile, setProfile] = useState();
+  const [profilePhoto, setProfilePhoto] = useState();
+  const [menuToggle, setMenuToggle] = useState(true);
   const [
     threads,
     isFetchingThreads,
@@ -18,9 +22,30 @@ export default function Home() {
     setCurrentThread,
     fetchThreads,
   ] = useThreads("");
-
   const [users, isFetchingUsers, currentUser, setCurrentUser, fetchUsers] =
     useUser();
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
+
+  const fetchCurrentUser = async () => {
+    const { data: userInfo } = await supabase
+      .from("users")
+      .select("username, profilePhotoUrl")
+      .order("id", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (userInfo) {
+      setProfile(userInfo.username);
+      setProfilePhoto(userInfo.profilePhotoUrl);
+    }
+  };
+
+  const handleMenuToggle = () => {
+    setMenuToggle(!menuToggle);
+  };
 
   const handleLoggedIn = () => {
     setLoggedIn(!loggedIn);
@@ -93,21 +118,31 @@ export default function Home() {
         <Menu
           handleLoggedIn={handleLoggedIn}
           threads={threads}
+          profile={profile}
+          profilePhoto={profilePhoto}
           isFetchingThreads={isFetchingThreads}
           currentThread={currentThread}
           setCurrentThread={setCurrentThread}
           fetchThreads={fetchThreads}
+          menuToggle={menuToggle}
+          handleMenuToggle={handleMenuToggle}
+          setMenuToggle={setMenuToggle}
         />
 
         <Feed
           handleLoggedIn={handleLoggedIn}
+          handleMenuToggle={handleMenuToggle}
           threads={threads}
+          profile={profile}
+          profilePhoto={profilePhoto}
           isFetchingThreads={isFetchingThreads}
           currentThread={currentThread}
           setCurrentThread={setCurrentThread}
           fetchThreads={fetchThreads}
           loggedIn={loggedIn}
           currentUser={currentUser}
+          menuToggle={menuToggle}
+          setMenuToggle={setMenuToggle}
         />
       </main>
     </div>
